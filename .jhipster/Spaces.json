@@ -1,0 +1,25 @@
+{
+  "fields": [
+    {
+      "fieldName": "date",
+      "fieldType": "LocalDate",
+      "fieldValidateRules": []
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipName": "user",
+      "otherEntityName": "user",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": [],
+      "otherEntityField": "login",
+      "ownerSide": true,
+      "otherEntityRelationshipName": "spaces"
+    }
+  ],
+  "service": "no",
+  "readOnly": false,
+  "pagination": "pagination",
+  "name": "Spaces",
+  "changelogDate": "20211112143850"
+}

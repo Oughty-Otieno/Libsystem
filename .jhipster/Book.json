@@ -1,0 +1,43 @@
+{
+  "fields": [
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": []
+    },
+    {
+      "fieldName": "author",
+      "fieldType": "String",
+      "fieldValidateRules": []
+    },
+    {
+      "fieldName": "fine_amount",
+      "fieldType": "Integer",
+      "fieldValidateRules": []
+    },
+    {
+      "fieldName": "publisher",
+      "fieldType": "String",
+      "fieldValidateRules": []
+    },
+    {
+      "fieldName": "quantity",
+      "fieldType": "Integer",
+      "fieldValidateRules": []
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipName": "category",
+      "otherEntityName": "category",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": [],
+      "otherEntityField": "name"
+    }
+  ],
+  "service": "no",
+  "readOnly": false,
+  "pagination": "pagination",
+  "name": "Book",
+  "changelogDate": "20211112124857"
+}

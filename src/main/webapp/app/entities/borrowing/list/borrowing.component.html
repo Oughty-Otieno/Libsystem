@@ -1,0 +1,112 @@
+<div>
+  <h2 id="page-heading" data-cy="BorrowingHeading">
+    <span>Borrowings</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info mr-2" (click)="loadPage()" [disabled]="isLoading">
+        <fa-icon icon="sync" [spin]="isLoading"></fa-icon>
+        <span>Refresh List</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-borrowing"
+        [routerLink]="['/borrowing/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span> Create a new Borrowing </span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  <div class="alert alert-warning" id="no-result" *ngIf="borrowings?.length === 0">
+    <span>No borrowings found</span>
+  </div>
+
+  <div class="table-responsive" id="entities" *ngIf="borrowings && borrowings.length > 0">
+    <table class="table table-striped" aria-describedby="page-heading">
+      <thead>
+        <tr jhiSort [(predicate)]="predicate" [(ascending)]="ascending" (sortChange)="loadPage()">
+          <th scope="col" jhiSortBy="id"><span>ID</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="date_borrowed"><span>Date Borrowed</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="due_date"><span>Due Date</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="return_date"><span>Return Date</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="status"><span>Status</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="book.title"><span>Book</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col" jhiSortBy="user.login"><span>User</span> <fa-icon icon="sort"></fa-icon></th>
+          <th scope="col"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let borrowing of borrowings; trackBy: trackId" data-cy="entityTable">
+          <td>
+            <a [routerLink]="['/borrowing', borrowing.id, 'view']">{{ borrowing.id }}</a>
+          </td>
+          <td>{{ borrowing.date_borrowed | formatMediumDate }}</td>
+          <td>{{ borrowing.due_date | formatMediumDate }}</td>
+          <td>{{ borrowing.return_date | formatMediumDate }}</td>
+          <td>{{ borrowing.status }}</td>
+          <td>
+            <div *ngIf="borrowing.book">
+              <a [routerLink]="['/book', borrowing.book?.id, 'view']">{{ borrowing.book?.title }}</a>
+            </div>
+          </td>
+          <td>
+            {{ borrowing.user?.login }}
+          </td>
+          <td class="text-right">
+            <div class="btn-group">
+              <button
+                type="submit"
+                [routerLink]="['/borrowing', borrowing.id, 'view']"
+                class="btn btn-info btn-sm"
+                data-cy="entityDetailsButton"
+              >
+                <fa-icon icon="eye"></fa-icon>
+                <span class="d-none d-md-inline">View</span>
+              </button>
+
+              <button
+                type="submit"
+                [routerLink]="['/borrowing', borrowing.id, 'edit']"
+                class="btn btn-primary btn-sm"
+                data-cy="entityEditButton"
+              >
+                <fa-icon icon="pencil-alt"></fa-icon>
+                <span class="d-none d-md-inline">Edit</span>
+              </button>
+
+              <button type="submit" (click)="delete(borrowing)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                <fa-icon icon="times"></fa-icon>
+                <span class="d-none d-md-inline">Delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div *ngIf="borrowings && borrowings.length > 0">
+    <div class="row justify-content-center">
+      <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+    </div>
+
+    <div class="row justify-content-center">
+      <ngb-pagination
+        [collectionSize]="totalItems"
+        [(page)]="ngbPaginationPage"
+        [pageSize]="itemsPerPage"
+        [maxSize]="5"
+        [rotate]="true"
+        [boundaryLinks]="true"
+        (pageChange)="loadPage($event)"
+      ></ngb-pagination>
+    </div>
+  </div>
+</div>
