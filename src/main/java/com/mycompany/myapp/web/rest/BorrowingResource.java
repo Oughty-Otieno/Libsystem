@@ -179,6 +179,14 @@ public class BorrowingResource {
         return ResponseUtil.wrapOrNotFound(borrowing);
     }
 
+    @GetMapping("/borrowings/user/")
+    public ResponseEntity<List<Borrowing>> getUserBorrowing(Pageable pageable) {
+        log.debug("REST request to get Borrowing : {}");
+        Page<Borrowing> page = borrowingRepository.findByUserIsCurrentUser(pageable);
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+        return ResponseEntity.ok().headers(headers).body(page.getContent());
+    }
+
     /**
      * {@code DELETE  /borrowings/:id} : delete the "id" borrowing.
      *
