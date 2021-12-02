@@ -42,10 +42,7 @@
           </span>
         </a>
         <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="entity-menu">
-          <li
-            *jhiHasAnyAuthority="'ROLE_ADMIN'"
-            ngbDropdown
-          >
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'" ngbDropdown>
             <a
               class="dropdown-item"
               routerLink="category"
@@ -57,10 +54,7 @@
               <span>Category</span>
             </a>
           </li>
-          <li
-            *jhiHasAnyAuthority="'ROLE_ADMIN'"
-            ngbDropdown
-          >
+          <li *jhiHasAnyAuthority="'ROLE_ADMIN'" ngbDropdown>
             <a
               class="dropdown-item"
               routerLink="book"

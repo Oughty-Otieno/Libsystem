@@ -30,6 +30,9 @@ const borrowingRoute: Routes = [
     resolve: {
       borrowing: BorrowingRoutingResolveService,
     },
+    data: {
+         authorities: ['ROLE_ADMIN'],
+          },
     canActivate: [UserRouteAccessService],
   },
   {
@@ -38,6 +41,9 @@ const borrowingRoute: Routes = [
     resolve: {
       borrowing: BorrowingRoutingResolveService,
     },
+    data: {
+          authorities: ['ROLE_ADMIN'],
+          },
     canActivate: [UserRouteAccessService],
   },
 ];

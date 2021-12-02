@@ -23,7 +23,7 @@
     {
       "relationshipName": "book",
       "otherEntityName": "book",
-      "relationshipType": "one-to-one",
+      "relationshipType": "many-to-one",
       "relationshipValidateRules": [],
       "otherEntityField": "title",
       "ownerSide": true,

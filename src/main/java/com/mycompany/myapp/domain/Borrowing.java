@@ -31,9 +31,8 @@ public class Borrowing implements Serializable {
     @Column(name = "status")
     private Boolean status;
 
+    @ManyToOne
     @JsonIgnoreProperties(value = { "category" }, allowSetters = true)
-    @OneToOne
-    @JoinColumn(unique = true)
     private Book book;
 
     @ManyToOne
