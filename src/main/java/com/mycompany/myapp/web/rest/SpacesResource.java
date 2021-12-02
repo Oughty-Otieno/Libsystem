@@ -1,7 +1,9 @@
 package com.mycompany.myapp.web.rest;
 
+import com.mycompany.myapp.domain.Borrowing;
 import com.mycompany.myapp.domain.Spaces;
 import com.mycompany.myapp.repository.SpacesRepository;
+import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -150,10 +152,21 @@ public class SpacesResource {
     @GetMapping("/spaces")
     public ResponseEntity<List<Spaces>> getAllSpaces(Pageable pageable) {
         log.debug("REST request to get a page of Spaces");
-        Page<Spaces> page = spacesRepository.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        if(SecurityUtils.hasCurrentUserThisAuthority("ROLE_ADMIN")) {
+            Page<Spaces> page = spacesRepository.findAll(pageable);
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+            return ResponseEntity.ok().headers(headers).body(page.getContent());
+        } else {
+            Optional <String> usernameOptional = SecurityUtils.getCurrentUserLogin();
+            if(usernameOptional.isPresent()) {
+                Page<Spaces> page = spacesRepository.findByUserIsCurrentUser(usernameOptional.get(), pageable);
+                HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+                return ResponseEntity.ok().headers(headers).body(page.getContent());
+            }
+        }
+        return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
+
 
     /**
      * {@code GET  /spaces/:id} : get the "id" spaces.

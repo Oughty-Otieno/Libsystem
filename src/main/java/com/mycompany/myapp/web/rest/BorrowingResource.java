@@ -2,6 +2,8 @@ package com.mycompany.myapp.web.rest;
 
 import com.mycompany.myapp.domain.Borrowing;
 import com.mycompany.myapp.repository.BorrowingRepository;
+import com.mycompany.myapp.security.AuthoritiesConstants;
+import com.mycompany.myapp.security.SecurityUtils;
 import com.mycompany.myapp.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -52,6 +55,7 @@ public class BorrowingResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/borrowings")
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Borrowing> createBorrowing(@RequestBody Borrowing borrowing) throws URISyntaxException {
         log.debug("REST request to save Borrowing : {}", borrowing);
         if (borrowing.getId() != null) {
@@ -75,6 +79,7 @@ public class BorrowingResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/borrowings/{id}")
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Borrowing> updateBorrowing(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody Borrowing borrowing
@@ -110,6 +115,7 @@ public class BorrowingResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PatchMapping(value = "/borrowings/{id}", consumes = { "application/json", "application/merge-patch+json" })
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Borrowing> partialUpdateBorrowing(
         @PathVariable(value = "id", required = false) final Long id,
         @RequestBody Borrowing borrowing
@@ -161,9 +167,19 @@ public class BorrowingResource {
     @GetMapping("/borrowings")
     public ResponseEntity<List<Borrowing>> getAllBorrowings(Pageable pageable) {
         log.debug("REST request to get a page of Borrowings");
-        Page<Borrowing> page = borrowingRepository.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
-        return ResponseEntity.ok().headers(headers).body(page.getContent());
+        if(SecurityUtils.hasCurrentUserThisAuthority("ROLE_ADMIN")) {
+            Page<Borrowing> page = borrowingRepository.findAll(pageable);
+            HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+            return ResponseEntity.ok().headers(headers).body(page.getContent());
+        } else {
+            Optional <String> usernameOptional = SecurityUtils.getCurrentUserLogin();
+            if(usernameOptional.isPresent()) {
+                Page<Borrowing> page = borrowingRepository.findByUserIsCurrentUser(usernameOptional.get(), pageable);
+                HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
+                return ResponseEntity.ok().headers(headers).body(page.getContent());
+            }
+        }
+        return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     /**
@@ -186,6 +202,7 @@ public class BorrowingResource {
      * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/borrowings/{id}")
+    @PreAuthorize("hasRole(\"" + AuthoritiesConstants.ADMIN + "\")")
     public ResponseEntity<Void> deleteBorrowing(@PathVariable Long id) {
         log.debug("REST request to delete Borrowing : {}", id);
         borrowingRepository.deleteById(id);

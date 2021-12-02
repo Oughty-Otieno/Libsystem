@@ -19,7 +19,7 @@ import { UserService } from 'app/entities/user/user.service';
 export class BorrowingUpdateComponent implements OnInit {
   isSaving = false;
 
-  booksCollection: IBook[] = [];
+  booksSharedCollection: IBook[] = [];
   usersSharedCollection: IUser[] = [];
 
   editForm = this.fb.group({
@@ -100,16 +100,16 @@ export class BorrowingUpdateComponent implements OnInit {
       user: borrowing.user,
     });
 
-    this.booksCollection = this.bookService.addBookToCollectionIfMissing(this.booksCollection, borrowing.book);
+    this.booksSharedCollection = this.bookService.addBookToCollectionIfMissing(this.booksSharedCollection, borrowing.book);
     this.usersSharedCollection = this.userService.addUserToCollectionIfMissing(this.usersSharedCollection, borrowing.user);
   }
 
   protected loadRelationshipsOptions(): void {
     this.bookService
-      .query({ filter: 'id-is-null' })
+      .query()
       .pipe(map((res: HttpResponse<IBook[]>) => res.body ?? []))
       .pipe(map((books: IBook[]) => this.bookService.addBookToCollectionIfMissing(books, this.editForm.get('book')!.value)))
-      .subscribe((books: IBook[]) => (this.booksCollection = books));
+      .subscribe((books: IBook[]) => (this.booksSharedCollection = books));
 
     this.userService
       .query()

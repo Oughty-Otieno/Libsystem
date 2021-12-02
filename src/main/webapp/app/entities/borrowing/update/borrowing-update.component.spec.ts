@@ -45,22 +45,23 @@ describe('Component Tests', () => {
     });
 
     describe('ngOnInit', () => {
-      it('Should call book query and add missing value', () => {
+      it('Should call Book query and add missing value', () => {
         const borrowing: IBorrowing = { id: 456 };
         const book: IBook = { id: 71097 };
         borrowing.book = book;
 
         const bookCollection: IBook[] = [{ id: 92915 }];
         jest.spyOn(bookService, 'query').mockReturnValue(of(new HttpResponse({ body: bookCollection })));
-        const expectedCollection: IBook[] = [book, ...bookCollection];
+        const additionalBooks = [book];
+        const expectedCollection: IBook[] = [...additionalBooks, ...bookCollection];
         jest.spyOn(bookService, 'addBookToCollectionIfMissing').mockReturnValue(expectedCollection);
 
         activatedRoute.data = of({ borrowing });
         comp.ngOnInit();
 
         expect(bookService.query).toHaveBeenCalled();
-        expect(bookService.addBookToCollectionIfMissing).toHaveBeenCalledWith(bookCollection, book);
-        expect(comp.booksCollection).toEqual(expectedCollection);
+        expect(bookService.addBookToCollectionIfMissing).toHaveBeenCalledWith(bookCollection, ...additionalBooks);
+        expect(comp.booksSharedCollection).toEqual(expectedCollection);
       });
 
       it('Should call User query and add missing value', () => {
@@ -93,7 +94,7 @@ describe('Component Tests', () => {
         comp.ngOnInit();
 
         expect(comp.editForm.value).toEqual(expect.objectContaining(borrowing));
-        expect(comp.booksCollection).toContain(book);
+        expect(comp.booksSharedCollection).toContain(book);
         expect(comp.usersSharedCollection).toContain(user);
       });
     });

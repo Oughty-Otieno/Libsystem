@@ -27,7 +27,7 @@
                 <constraints nullable="true" />
             </column>
             <column name="book_id" type="bigint">
-                <constraints nullable="true" unique="true" uniqueConstraintName="ux_borrowing__book_id" />
+                <constraints nullable="true" />
             </column>
             <column name="user_id" type="bigint">
                 <constraints nullable="true" />

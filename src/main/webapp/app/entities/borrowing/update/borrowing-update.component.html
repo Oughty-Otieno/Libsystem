@@ -83,7 +83,7 @@
             <option [ngValue]="null"></option>
             <option
               [ngValue]="bookOption.id === editForm.get('book')!.value?.id ? editForm.get('book')!.value : bookOption"
-              *ngFor="let bookOption of booksCollection; trackBy: trackBookById"
+              *ngFor="let bookOption of booksSharedCollection; trackBy: trackBookById"
             >
               {{ bookOption.title }}
             </option>
